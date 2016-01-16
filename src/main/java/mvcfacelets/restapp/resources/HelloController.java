@@ -4,8 +4,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.mvc.Models;
 import javax.mvc.annotation.Controller;
-import javax.ws.rs.Path;
-import javax.ws.rs.GET;
+import javax.ws.rs.*;
 
 @Path("/hello")
 @Controller
@@ -16,8 +15,26 @@ public class HelloController {
     private Models model;
     
     @GET
-    public String doGet() {
-        model.put("hello", "Hello MVC 1.0");
-        return "hello.jsp";
+    public String doGet(@QueryParam("view") @DefaultValue("JSP") ViewEngineType viewEngine) {
+        model.put("hello", "Hello MVC 1.0 from " + viewEngine);
+        
+        return "hello." + viewEngine.getViewSuffix();
     }
+
+    public static enum ViewEngineType {
+        JSP {
+            @Override
+            public String getViewSuffix() {
+                return "jsp";
+            }
+        }, FACELET {
+            @Override
+            public String getViewSuffix() {
+                return "xhtml";
+            }
+        };
+        
+        public abstract String getViewSuffix();
+    }
+    
 }
